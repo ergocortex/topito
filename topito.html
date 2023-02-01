@@ -1,0 +1,427 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body {font-family: "Lucida Handwriting";} 
+        </style>
+        <title>Topito Come Semillas (Global Game Jam 2023)</title>
+    </head>
+    <body>
+        <h3 style="margin:0px; color:lightcoral">
+            Global Game Jam 2023 <span style="color:gray;">Gensiken Ginko</span> Topito Come Semillas
+        </h3>
+        <canvas id="Canvas" style="width:640px; height:480px; border-width: 1px; border-color:gray; border-style: solid;">
+        </canvas>
+    </body>
+
+    <script>
+
+        function AnguloEnGrados(valor)
+        {
+            return(valor * (2 * Math.PI) / 360);
+        }
+
+        function PolarX(radio, angulo)
+        {
+            return(radio * Math.cos(angulo));
+        }
+
+        function PolarY(radio, angulo)
+        {
+            return(radio * Math.sin(angulo));
+        }
+
+        class Reloj
+        {
+            instante = performance.now();
+
+            Tic()
+            {
+                let ahora = performance.now();
+
+                window.lapso = (ahora - this.instante) / 1000;
+
+                this.instante = ahora;
+            }
+        }
+
+        class Vector
+        { 
+            x = 0;
+            y = 0;
+
+            static Polar(radio, angulo)
+            {
+                let x = PolarX(radio, angulo);
+                let y = PolarY(radio, angulo);
+
+                return(new Vector(x, y));
+            }
+
+            constructor(x = 0, y = 0)
+            {
+                this.x = x;
+                this.y = y;
+            }
+
+            Dimension()
+            {
+                return(Math.sqrt(this.x * this.x + this.y * this.y));
+            }
+
+            Suma(vector)
+            {
+                return(new Vector(this.x + vector.x, this.y + vector.y));
+            }
+
+            Resta(vector)
+            {
+                return(new Vector(this.x - vector.x, this.y - vector.y));
+            }
+        }
+
+        class Kawai
+        {
+            static Dibuja(context, posicion, dimensionOjo, dimensionBoca)
+            {
+                context.strokeStyle = 'gray';
+
+                context.beginPath();
+                context.arc(posicion.x - dimensionOjo * 2, posicion.y, dimensionOjo, -Math.PI, 0);
+                context.stroke();
+
+                context.beginPath();
+                context.arc(posicion.x + dimensionOjo * 2, posicion.y, dimensionOjo, -Math.PI, 0);
+                context.stroke();
+
+                context.beginPath();
+                context.arc(posicion.x, posicion.y + dimensionBoca, dimensionBoca, 0, Math.PI);
+                context.stroke();
+            }
+        }
+
+        class Pinta
+        {
+            static Circulo(context, posicion, radio)
+            {
+                context.beginPath();
+                context.arc(posicion.x, posicion.y, radio, 0, 2 * Math.PI);
+                context.fill();
+                context.stroke();   
+            }
+        }
+
+        class Sol
+        {
+            angulo_solar = 0;
+
+            Dibuja(context)
+            {
+                context.strokeStyle = 'yellow';
+                context.fillStyle = 'yellow';
+
+                let posicion = new Vector(320, 240);
+                let solar = Vector.Polar(200, this.angulo_solar);
+
+                posicion.x += solar.x;
+                posicion.y += solar.y;
+
+                context.beginPath();
+                context.arc(posicion.x, posicion.y, 70, 0, 2 * Math.PI);
+                context.fill();
+
+                let delta = Math.PI / 10;
+
+                context.lineWidth = 2;
+
+                // '--> Rayos
+
+                for(let i = 0, n = 20; i < n ; ++i)
+                {
+                    let desde = Vector.Polar(80, delta * i);
+                    let hasta = Vector.Polar(i % 2 ? 90 : 100, delta * i);
+
+                    context.beginPath();
+                    context.moveTo(posicion.x + desde.x, posicion.y + desde.y);
+                    context.lineTo(posicion.x + hasta.x, posicion.y + hasta.y);
+                    context.stroke();
+                }
+
+                // '--> Cara
+
+                Kawai.Dibuja(context, posicion, 10, 20);
+            }
+        }
+
+        class Fondo
+        {
+            sol = new Sol();
+
+            altoCielo = 140;
+
+            Dibuja(context)
+            {
+                // '--> Cielo
+
+                context.fillStyle = 'skyblue';
+
+                context.beginPath();
+                context.fillRect(0, 0, 640, this.altoCielo);
+
+                // '--> Tierra
+
+                context.fillStyle = 'wheat';
+
+                context.beginPath();
+                context.fillRect(0, this.altoCielo, 640, 480);
+
+                // '--> Sol
+
+                this.sol.Dibuja(context);
+            }
+        }
+
+        class Topito
+        {
+            posicion = new Vector(320, 240);
+
+            Dibuja(context)
+            {
+                let posicion = this.posicion;
+
+                context.fillStyle = 'pink';
+                context.strokeStyle = 'gray';
+
+                // '--> Cuerpo
+
+                let posCuerpo = posicion.Suma(Vector.Polar(40, AnguloEnGrados(90)));
+
+                Pinta.Circulo(context, posCuerpo, 25);
+
+                // '--> Cabeza
+
+                Pinta.Circulo(context, posicion, 20);
+
+                context.fillStyle = 'orchid';
+
+                // '--> Cara
+
+                Kawai.Dibuja(context, posicion.Suma(new Vector(0, -4)), 3.5, 7);
+
+                // '--> Nariz
+
+                Pinta.Circulo(context, posicion.Suma(new Vector(0, 4)), 4);
+
+                // '--> Orejas
+
+                Pinta.Circulo(context, posicion.Suma(new Vector(+16, -16)), 5);
+                Pinta.Circulo(context, posicion.Suma(new Vector(-16, -16)), 5);
+
+                for(let angulo = 45; angulo < 360; angulo += 90)
+                {
+                    let posPata = posCuerpo.Suma(Vector.Polar(30, AnguloEnGrados(angulo)));
+
+                    Pinta.Circulo(context, posPata, 10);
+                }
+
+                // '--> Cola
+
+                context.beginPath();
+                context.moveTo(posCuerpo.x + PolarX(25, AnguloEnGrados(+100)), posCuerpo.y + PolarY(25, AnguloEnGrados(+100)));
+                context.lineTo(posCuerpo.x + PolarX(60, AnguloEnGrados(+90)), posCuerpo.y + PolarY(60, AnguloEnGrados(+90)));
+                context.lineTo(posCuerpo.x + PolarX(25, AnguloEnGrados(+80)), posCuerpo.y + PolarY(25, AnguloEnGrados(+80)));
+                context.closePath();
+                context.fill();
+                context.stroke();
+            }
+        }
+
+        class Semilla
+        {
+            tipo = 0; // 1 : verde | 2 : amarilla | 3 : roja | 4 : azul (venenosa)
+
+            posicion = new Vector();
+            destino = new Vector();
+
+            constructor()
+            {
+                this.tipo = 1 + Math.round(Math.random() * 4);
+
+                let x = Math.random() * 640;
+                let y = 140 + Math.random() * (480 - 140);
+
+                console.log(x, y);
+
+                this.posicion = new Vector(x, 0);
+                this.destino = new Vector(x, y);
+            }
+
+            Tic()
+            {
+                if(this.destino.y > this.posicion.y)
+                    this.posicion.y += 100 * window.lapso;
+            }
+
+            Dibuja(context)
+            {
+                switch(this.tipo)
+                {
+                    case 1 : context.fillStyle = 'green'; break;
+                    case 2 : context.fillStyle = 'yellow'; break;
+                    case 3 : context.fillStyle = 'red'; break;
+                    case 4 : context.fillStyle = 'blue'; break;
+                }
+
+                Pinta.Circulo(context, this.posicion, 5);
+            }
+        }
+
+        class Marcador
+        {
+            
+        }
+
+        class Juego
+        {
+            context = null;
+
+            reloj = new Reloj();
+
+            teclado = new Map();
+
+            fondo = new Fondo();
+            topito = new Topito();
+
+            semillas = [];
+
+            Comienzo()
+            {
+                let canvas = document.getElementById("Canvas");
+                
+                let context = canvas.getContext("2d");
+
+                canvas.width = canvas.scrollWidth;
+                canvas.height = canvas.scrollHeight;
+
+                document.addEventListener('keydown', (event) => this.TeclaPulsada(event));
+                document.addEventListener('keyup', (event) => this.TeclaLiberada(event));
+
+                this.context = context;
+
+                this.Actualiza();
+            }
+
+            TeclaPulsada(event)
+            {
+                this.teclado.set(event.keyCode, true);
+
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            TeclaLiberada(event)
+            {
+                this.teclado.set(event.keyCode, false);
+
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            ActualizaTeclado()
+            {
+                const borde = 1;
+                const velocidad = 1.75;
+
+                let ancho = this.context.canvas.width;
+                let alto = this.context.canvas.height;
+
+                let altoCielo = this.fondo.altoCielo;
+
+                let topito = this.topito;
+
+                for(let [key, value] of this.teclado)
+                {
+                    if(!value) continue;
+
+                    if(key == '38') // arriba
+                    {
+                        if(topito.posicion.y > borde + altoCielo)
+                            topito.posicion.y -= velocidad;    
+                    }
+                    else if (key == '40') // abajo
+                    {
+                        if(topito.posicion.y < (alto - borde))
+                            topito.posicion.y += velocidad;      
+                    }
+                    else if (key == '37') // izquierda
+                    {
+                        if(topito.posicion.x > borde)
+                            topito.posicion.x -= velocidad;  
+                    }
+                    else if (key == '39') // derecha
+                    {
+                        if(topito.posicion.x < (ancho - borde))
+                            topito.posicion.x += velocidad; 
+                    }
+                }
+            }
+
+            Actualiza = () =>
+            {
+                let context = this.context;
+
+                let width = context.canvas.width;
+                let height = context.canvas.height;
+                
+                // Borramos la pantalla
+
+                context.clearRect(0, 0, width, height);
+
+                // '--> Movimiento
+
+                this.reloj.Tic();
+
+                this.fondo.sol.angulo_solar += Math.PI / 10 * window.lapso;
+
+                this.ActualizaTeclado();
+
+                while(this.semillas.length < 10)
+                {
+                    let semilla = new Semilla();
+
+                    this.semillas.push(semilla);
+                }
+
+                for(let i = this.semillas.length - 1; i > 0 ; --i)
+                {
+                    let semilla = this.semillas[i];
+
+                    semilla.Tic();
+
+                    if(this.topito.posicion.Resta(semilla.posicion).Dimension() < 10)
+                    {
+                        this.semillas.splice(i, 1);
+                    }   
+                }
+                    
+                // '--> Dibujo
+
+                this.fondo.Dibuja(context);
+                this.topito.Dibuja(context);
+
+                for(let semilla of this.semillas)
+                    semilla.Dibuja(context);
+
+                window.requestAnimationFrame(this.Actualiza);
+            }
+        }
+
+        let juego = new Juego();
+
+        window.onload = () =>
+        {
+            juego.Comienzo();
+        }
+            
+    </script>
+</html>
