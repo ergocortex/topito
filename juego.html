@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>Topito Come Semillas</h1>
+        <canvas id="Canvas" style="width:640;height:480;border:1px solid rgb(22, 145, 20);"></canvas>
+
+        <script>
+
+            window.onload = () =>
+            {
+                let canvas = document.getElementById("Canvas");
+
+                canvas.width = canvas.scrollWidth;
+                canvas.height = canvas.scrollHeight;
+
+                let contexto = canvas.getContext("2d");
+
+                contexto.fillStyle = "rgb(200, 100, 200)";
+
+                contexto.beginPath();
+                contexto.arc(320, 240, 100, 0, 2 * Math.PI);
+                contexto.fill();
+            }
+
+        </script>
+    </body>
+</html>

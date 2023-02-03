@@ -250,9 +250,7 @@
                 let x = Math.random() * 640;
                 let y = 140 + Math.random() * (480 - 140);
 
-                console.log(x, y);
-
-                this.posicion = new Vector(x, 0);
+                this.posicion = new Vector(x, 10);
                 this.destino = new Vector(x, y);
             }
 
@@ -278,7 +276,17 @@
 
         class Marcador
         {
-            
+            posicion = new Vector(320, 50);
+
+            puntuacion = 0;
+
+            Dibuja(context)    
+            {
+                context.fillStyle = 'slateblue';
+
+                context.beginPath();
+                context.fillText(String(this.puntuacion), this.posicion.x, this.posicion.y);
+            }
         }
 
         class Juego
@@ -286,6 +294,8 @@
             context = null;
 
             reloj = new Reloj();
+
+            marcador = new Marcador();
 
             teclado = new Map();
 
@@ -297,11 +307,14 @@
             Comienzo()
             {
                 let canvas = document.getElementById("Canvas");
-                
-                let context = canvas.getContext("2d");
 
                 canvas.width = canvas.scrollWidth;
                 canvas.height = canvas.scrollHeight;
+                
+                let context = canvas.getContext("2d");
+
+                context.textAlign = "center";
+                context.font = "italic bold 50px Arial";
 
                 document.addEventListener('keydown', (event) => this.TeclaPulsada(event));
                 document.addEventListener('keyup', (event) => this.TeclaLiberada(event));
@@ -392,7 +405,7 @@
                     this.semillas.push(semilla);
                 }
 
-                for(let i = this.semillas.length - 1; i > 0 ; --i)
+                for(let i = this.semillas.length - 1; i >= 0 ; --i)
                 {
                     let semilla = this.semillas[i];
 
@@ -400,6 +413,8 @@
 
                     if(this.topito.posicion.Resta(semilla.posicion).Dimension() < 10)
                     {
+                        this.marcador.puntuacion += 4 - semilla.tipo;
+
                         this.semillas.splice(i, 1);
                     }   
                 }
@@ -407,6 +422,8 @@
                 // '--> Dibujo
 
                 this.fondo.Dibuja(context);
+
+                this.marcador.Dibuja(context);
                 this.topito.Dibuja(context);
 
                 for(let semilla of this.semillas)

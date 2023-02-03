@@ -1,4 +1,4 @@
-<h1>¡Topito Come Semillas!</h1>
+<h1>¡Topito Come Semillas!</h1> (Global Game Jam 2023)
 
 <p>
 Topito vivía feliz en su madriguera, le encantaba salir a tomar el sol y comer bayas en los bosques de los alrededores.
