@@ -82,32 +82,32 @@
 
         class Kawai
         {
-            static Dibuja(context, posicion, dimensionOjo, dimensionBoca)
+            static Dibuja(contexto, posicion, dimensionOjo, dimensionBoca)
             {
-                context.strokeStyle = 'gray';
+                contexto.strokeStyle = 'gray';
 
-                context.beginPath();
-                context.arc(posicion.x - dimensionOjo * 2, posicion.y, dimensionOjo, -Math.PI, 0);
-                context.stroke();
+                contexto.beginPath();
+                contexto.arc(posicion.x - dimensionOjo * 2, posicion.y, dimensionOjo, -Math.PI, 0);
+                contexto.stroke();
 
-                context.beginPath();
-                context.arc(posicion.x + dimensionOjo * 2, posicion.y, dimensionOjo, -Math.PI, 0);
-                context.stroke();
+                contexto.beginPath();
+                contexto.arc(posicion.x + dimensionOjo * 2, posicion.y, dimensionOjo, -Math.PI, 0);
+                contexto.stroke();
 
-                context.beginPath();
-                context.arc(posicion.x, posicion.y + dimensionBoca, dimensionBoca, 0, Math.PI);
-                context.stroke();
+                contexto.beginPath();
+                contexto.arc(posicion.x, posicion.y + dimensionBoca, dimensionBoca, 0, Math.PI);
+                contexto.stroke();
             }
         }
 
         class Pinta
         {
-            static Circulo(context, posicion, radio)
+            static Circulo(contexto, posicion, radio)
             {
-                context.beginPath();
-                context.arc(posicion.x, posicion.y, radio, 0, 2 * Math.PI);
-                context.fill();
-                context.stroke();   
+                contexto.beginPath();
+                contexto.arc(posicion.x, posicion.y, radio, 0, 2 * Math.PI);
+                contexto.fill();
+                contexto.stroke();   
             }
         }
 
@@ -115,10 +115,10 @@
         {
             angulo_solar = 0;
 
-            Dibuja(context)
+            Dibuja(contexto)
             {
-                context.strokeStyle = 'yellow';
-                context.fillStyle = 'yellow';
+                contexto.strokeStyle = 'yellow';
+                contexto.fillStyle = 'yellow';
 
                 let posicion = new Vector(320, 240);
                 let solar = Vector.Polar(200, this.angulo_solar);
@@ -126,13 +126,13 @@
                 posicion.x += solar.x;
                 posicion.y += solar.y;
 
-                context.beginPath();
-                context.arc(posicion.x, posicion.y, 70, 0, 2 * Math.PI);
-                context.fill();
+                contexto.beginPath();
+                contexto.arc(posicion.x, posicion.y, 70, 0, 2 * Math.PI);
+                contexto.fill();
 
                 let delta = Math.PI / 10;
 
-                context.lineWidth = 2;
+                contexto.lineWidth = 2;
 
                 // '--> Rayos
 
@@ -141,15 +141,15 @@
                     let desde = Vector.Polar(80, delta * i);
                     let hasta = Vector.Polar(i % 2 ? 90 : 100, delta * i);
 
-                    context.beginPath();
-                    context.moveTo(posicion.x + desde.x, posicion.y + desde.y);
-                    context.lineTo(posicion.x + hasta.x, posicion.y + hasta.y);
-                    context.stroke();
+                    contexto.beginPath();
+                    contexto.moveTo(posicion.x + desde.x, posicion.y + desde.y);
+                    contexto.lineTo(posicion.x + hasta.x, posicion.y + hasta.y);
+                    contexto.stroke();
                 }
 
                 // '--> Cara
 
-                Kawai.Dibuja(context, posicion, 10, 20);
+                Kawai.Dibuja(contexto, posicion, 10, 20);
             }
         }
 
@@ -159,25 +159,25 @@
 
             altoCielo = 140;
 
-            Dibuja(context)
+            Dibuja(contexto)
             {
                 // '--> Cielo
 
-                context.fillStyle = 'skyblue';
+                contexto.fillStyle = 'skyblue';
 
-                context.beginPath();
-                context.fillRect(0, 0, 640, this.altoCielo);
+                contexto.beginPath();
+                contexto.fillRect(0, 0, 640, this.altoCielo);
 
                 // '--> Tierra
 
-                context.fillStyle = 'wheat';
+                contexto.fillStyle = 'wheat';
 
-                context.beginPath();
-                context.fillRect(0, this.altoCielo, 640, 480);
+                contexto.beginPath();
+                contexto.fillRect(0, this.altoCielo, 640, 480);
 
                 // '--> Sol
 
-                this.sol.Dibuja(context);
+                this.sol.Dibuja(contexto);
             }
         }
 
@@ -185,54 +185,54 @@
         {
             posicion = new Vector(320, 240);
 
-            Dibuja(context)
+            Dibuja(contexto)
             {
                 let posicion = this.posicion;
 
-                context.fillStyle = 'pink';
-                context.strokeStyle = 'gray';
+                contexto.fillStyle = 'pink';
+                contexto.strokeStyle = 'gray';
 
                 // '--> Cuerpo
 
                 let posCuerpo = posicion.Suma(Vector.Polar(40, AnguloEnGrados(90)));
 
-                Pinta.Circulo(context, posCuerpo, 25);
+                Pinta.Circulo(contexto, posCuerpo, 25);
 
                 // '--> Cabeza
 
-                Pinta.Circulo(context, posicion, 20);
+                Pinta.Circulo(contexto, posicion, 20);
 
-                context.fillStyle = 'orchid';
+                contexto.fillStyle = 'orchid';
 
                 // '--> Cara
 
-                Kawai.Dibuja(context, posicion.Suma(new Vector(0, -4)), 3.5, 7);
+                Kawai.Dibuja(contexto, posicion.Suma(new Vector(0, -4)), 3.5, 7);
 
                 // '--> Nariz
 
-                Pinta.Circulo(context, posicion.Suma(new Vector(0, 4)), 4);
+                Pinta.Circulo(contexto, posicion.Suma(new Vector(0, 4)), 4);
 
                 // '--> Orejas
 
-                Pinta.Circulo(context, posicion.Suma(new Vector(+16, -16)), 5);
-                Pinta.Circulo(context, posicion.Suma(new Vector(-16, -16)), 5);
+                Pinta.Circulo(contexto, posicion.Suma(new Vector(+16, -16)), 5);
+                Pinta.Circulo(contexto, posicion.Suma(new Vector(-16, -16)), 5);
 
                 for(let angulo = 45; angulo < 360; angulo += 90)
                 {
                     let posPata = posCuerpo.Suma(Vector.Polar(30, AnguloEnGrados(angulo)));
 
-                    Pinta.Circulo(context, posPata, 10);
+                    Pinta.Circulo(contexto, posPata, 10);
                 }
 
                 // '--> Cola
 
-                context.beginPath();
-                context.moveTo(posCuerpo.x + PolarX(25, AnguloEnGrados(+100)), posCuerpo.y + PolarY(25, AnguloEnGrados(+100)));
-                context.lineTo(posCuerpo.x + PolarX(60, AnguloEnGrados(+90)), posCuerpo.y + PolarY(60, AnguloEnGrados(+90)));
-                context.lineTo(posCuerpo.x + PolarX(25, AnguloEnGrados(+80)), posCuerpo.y + PolarY(25, AnguloEnGrados(+80)));
-                context.closePath();
-                context.fill();
-                context.stroke();
+                contexto.beginPath();
+                contexto.moveTo(posCuerpo.x + PolarX(25, AnguloEnGrados(+100)), posCuerpo.y + PolarY(25, AnguloEnGrados(+100)));
+                contexto.lineTo(posCuerpo.x + PolarX(60, AnguloEnGrados(+90)), posCuerpo.y + PolarY(60, AnguloEnGrados(+90)));
+                contexto.lineTo(posCuerpo.x + PolarX(25, AnguloEnGrados(+80)), posCuerpo.y + PolarY(25, AnguloEnGrados(+80)));
+                contexto.closePath();
+                contexto.fill();
+                contexto.stroke();
             }
         }
 
@@ -260,17 +260,17 @@
                     this.posicion.y += 100 * window.lapso;
             }
 
-            Dibuja(context)
+            Dibuja(contexto)
             {
                 switch(this.tipo)
                 {
-                    case 1 : context.fillStyle = 'green'; break;
-                    case 2 : context.fillStyle = 'yellow'; break;
-                    case 3 : context.fillStyle = 'red'; break;
-                    case 4 : context.fillStyle = 'blue'; break;
+                    case 1 : contexto.fillStyle = 'green'; break;
+                    case 2 : contexto.fillStyle = 'yellow'; break;
+                    case 3 : contexto.fillStyle = 'red'; break;
+                    case 4 : contexto.fillStyle = 'blue'; break;
                 }
 
-                Pinta.Circulo(context, this.posicion, 5);
+                Pinta.Circulo(contexto, this.posicion, 5);
             }
         }
 
@@ -278,20 +278,41 @@
         {
             posicion = new Vector(320, 50);
 
+            vidas = 3;
             puntuacion = 0;
 
-            Dibuja(context)    
-            {
-                context.fillStyle = 'slateblue';
+            angulo = 0;
 
-                context.beginPath();
-                context.fillText(String(this.puntuacion), this.posicion.x, this.posicion.y);
+            Tic()
+            {
+                this.angulo += 0.2;
+            }
+
+            Dibuja(contexto)    
+            {
+                const avance = 30;
+
+                contexto.strokeStyle = 'gray'
+                contexto.fillStyle = 'white';
+                
+                let titulo = "Vidas:" + String(this.vidas) + "   Puntos:" + String(this.puntuacion);
+
+                for(let i = 0, n = titulo.length; i < n; ++i)
+                {
+                    let letter = titulo.substring(i, i + 1);
+
+                    let posicion = this.posicion.Suma(new Vector(-n / 2 * avance + i * avance, Math.sin(this.angulo + i * 5)))
+
+                    contexto.beginPath();
+                    contexto.fillText(letter, posicion.x, posicion.y);
+                    contexto.strokeText(letter, posicion.x, posicion.y);
+                }
             }
         }
 
         class Juego
         {
-            context = null;
+            contexto = null;
 
             reloj = new Reloj();
 
@@ -311,15 +332,15 @@
                 canvas.width = canvas.scrollWidth;
                 canvas.height = canvas.scrollHeight;
                 
-                let context = canvas.getContext("2d");
+                let contexto = canvas.getContext("2d");
 
-                context.textAlign = "center";
-                context.font = "italic bold 50px Arial";
+                contexto.textAlign = "center";
+                contexto.font = "bold 50px Courier";
 
                 document.addEventListener('keydown', (event) => this.TeclaPulsada(event));
                 document.addEventListener('keyup', (event) => this.TeclaLiberada(event));
 
-                this.context = context;
+                this.contexto = contexto;
 
                 this.Actualiza();
             }
@@ -345,8 +366,8 @@
                 const borde = 1;
                 const velocidad = 1.75;
 
-                let ancho = this.context.canvas.width;
-                let alto = this.context.canvas.height;
+                let ancho = this.contexto.canvas.width;
+                let alto = this.contexto.canvas.height;
 
                 let altoCielo = this.fondo.altoCielo;
 
@@ -381,18 +402,19 @@
 
             Actualiza = () =>
             {
-                let context = this.context;
+                let contexto = this.contexto;
 
-                let width = context.canvas.width;
-                let height = context.canvas.height;
+                let ancho = contexto.canvas.width;
+                let alto = contexto.canvas.height;
                 
                 // Borramos la pantalla
 
-                context.clearRect(0, 0, width, height);
+                contexto.clearRect(0, 0, ancho, alto);
 
                 // '--> Movimiento
 
                 this.reloj.Tic();
+                this.marcador.Tic();
 
                 this.fondo.sol.angulo_solar += Math.PI / 10 * window.lapso;
 
@@ -415,19 +437,22 @@
                     {
                         this.marcador.puntuacion += 4 - semilla.tipo;
 
+                        if(semilla.tipo == 4)
+                            this.marcador.vidas -= 1;
+
                         this.semillas.splice(i, 1);
                     }   
                 }
                     
                 // '--> Dibujo
 
-                this.fondo.Dibuja(context);
+                this.fondo.Dibuja(contexto);
 
-                this.marcador.Dibuja(context);
-                this.topito.Dibuja(context);
+                this.marcador.Dibuja(contexto);
+                this.topito.Dibuja(contexto);
 
                 for(let semilla of this.semillas)
-                    semilla.Dibuja(context);
+                    semilla.Dibuja(contexto);
 
                 window.requestAnimationFrame(this.Actualiza);
             }

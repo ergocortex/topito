@@ -8,20 +8,194 @@
 
         <script>
 
+            function PintarCirculo(contexto, x, y, radio)
+            {
+                contexto.beginPath();
+                contexto.arc(x, y, radio, 0, 2 * Math.PI);
+                contexto.fill();
+            }
+
+            function PintarRectangulo(contexto, x, y, ancho, alto)
+            {
+                contexto.beginPath();
+                contexto.fillRect(x, y, ancho, alto);  
+            }
+
+            class Vector
+            {
+                x = 0;
+                y = 0;
+
+                constructor(x, y)
+                {
+                    this.x = x;
+                    this.y = y;
+                }
+            }
+
+            class Fondo
+            {
+                Dibuja(contexto)
+                {
+                    // Cielo
+
+                    contexto.fillStyle = 'skyblue';
+
+                    PintarRectangulo(contexto, 0, 0, 640, 140);
+
+                    // Tierra
+
+                    contexto.fillStyle = 'wheat';
+
+                    PintarRectangulo(contexto, 0, 140, 640, 480);     
+                }
+            }
+
+            class Bola
+            {
+                posicion = new Vector(320, 240);
+                velocidad = new Vector(0, 0);
+
+                Tic()
+                {
+                    this.posicion.x += this.velocidad.x;
+                    this.posicion.y += this.velocidad.y;    
+                }
+
+                Dibuja(contexto)
+                {
+                    contexto.fillStyle = "rgb(200, 100, 200)";
+
+                    PintarCirculo(contexto, this.posicion.x,
+                        this.posicion.y, 100);
+                }  
+            }
+
+            class MotorJuego
+            {
+                contexto = null;
+
+                mapaTeclado = new Map();
+
+                fondo = new Fondo();
+                bola = new Bola();
+
+                Comienzo()
+                {
+                    // Arrancamos el motor gráfico
+
+                    let canvas = document.getElementById("Canvas");
+
+                    canvas.width = canvas.scrollWidth;
+                    canvas.height = canvas.scrollHeight;
+
+                    this.contexto = canvas.getContext("2d");
+
+                    // Controlamos el teclado
+
+                    document.addEventListener('keydown',
+                        (event) => this.TeclaPulsada(event));
+                    document.addEventListener('keyup',
+                        (event) => this.TeclaLiberada(event));
+
+                    this.Actualiza();
+                }
+
+                TeclaPulsada(event)
+                {
+                    console.log(event.key);
+
+                    this.mapaTeclado.set(event.key, true);
+
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                TeclaLiberada(event)
+                {
+                    this.mapaTeclado.set(event.key, false);
+
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                ActualizaTeclado = () =>
+                {
+                    this.bola.velocidad = new Vector(0, 0);
+
+                    for(let [codigoTecla, valor] of this.mapaTeclado)
+                    {
+                        if(!valor) continue;
+
+                        switch(codigoTecla)
+                        {
+                        case 'ArrowUp' : // arriba
+                        case 'w' : // arriba
+
+                            this.bola.velocidad.y = -1;
+                            
+                            break;
+
+                        case 'ArrowDown' : // abajo
+
+                            this.bola.velocidad.y = +1;
+                        
+                            break;
+
+                        case 'ArrowLeft' : // izquierda
+
+                            this.bola.velocidad.x = -1;
+                        
+                            break;
+
+                        case 'ArrowRight' : // derecha
+
+                            this.bola.velocidad.x = +1;
+                        
+                            break;
+                        }
+                    }    
+                }
+
+                Actualiza = () =>
+                {
+                    let contexto = this.contexto;
+
+                    // Borramos la pantalla
+
+                    let ancho = contexto.canvas.width;
+                    let alto = contexto.canvas.height;
+
+                    contexto.clearRect(0, 0, ancho, alto);
+
+                    // Controlamos Teclado
+
+                    this.ActualizaTeclado();
+
+                    // Movemos
+
+                    this.bola.Tic();
+
+                    // Dibujamos
+
+                    this.fondo.Dibuja(contexto);
+
+                    this.bola.Dibuja(contexto);
+
+                    contexto.fillStyle = "rgba(100, 200, 200, 0.5)";
+
+                    PintarCirculo(contexto, 200, 240, 100);
+                    PintarCirculo(contexto, 400, 240, 100);
+
+                    window.requestAnimationFrame(this.Actualiza);
+                }
+            }
+
+            let juego = new MotorJuego();
+
             window.onload = () =>
             {
-                let canvas = document.getElementById("Canvas");
-
-                canvas.width = canvas.scrollWidth;
-                canvas.height = canvas.scrollHeight;
-
-                let contexto = canvas.getContext("2d");
-
-                contexto.fillStyle = "rgb(200, 100, 200)";
-
-                contexto.beginPath();
-                contexto.arc(320, 240, 100, 0, 2 * Math.PI);
-                contexto.fill();
+                juego.Comienzo();
             }
 
         </script>
