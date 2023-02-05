@@ -8,6 +8,13 @@
 
         <script>
 
+            function AnguloEnGrados(grados)
+            {
+                let radianes = grados * (2 * Math.PI) / 360;
+
+                return(radianes);
+            }
+
             function PintarCirculo(contexto, x, y, radio)
             {
                 contexto.beginPath();
@@ -26,10 +33,23 @@
                 x = 0;
                 y = 0;
 
-                constructor(x, y)
+                constructor(x = 0, y = 0)
                 {
                     this.x = x;
                     this.y = y;
+                }
+
+                Polar = (radio, grados) =>
+                {
+                    let radianes = AnguloEnGrados(grados);
+
+                    this.x = radio * Math.sin(radianes);
+                    this.y = radio * Math.cos(radianes);
+                }
+
+                Hipotenusa = () =>
+                {
+                    return(Math.sqrt(this.x * this.x + this.y * this.y));
                 }
             }
 
@@ -56,19 +76,60 @@
                 posicion = new Vector(320, 240);
                 velocidad = new Vector(0, 0);
 
+                angulo = 0;
+
                 Tic()
                 {
                     this.posicion.x += this.velocidad.x;
-                    this.posicion.y += this.velocidad.y;    
+                    this.posicion.y += this.velocidad.y;
+                    
+                    this.angulo += 1;
                 }
 
                 Dibuja(contexto)
                 {
+                    // Cara
+                    
                     contexto.fillStyle = "rgb(200, 100, 200)";
 
                     PintarCirculo(contexto, this.posicion.x,
-                        this.posicion.y, 100);
+                        this.posicion.y, 50);
+
+                    // Ojos
+
+                    contexto.fillStyle = "rgb(50, 100, 200)";
+
+                    let posicionOjoDerecho = new Vector();
+                    let posicionOjoIzquierdo = new Vector()
+
+                    posicionOjoDerecho.Polar(25, -135 + this.angulo);
+                    posicionOjoIzquierdo.Polar(25, +135 + this.angulo);
+
+                    PintarCirculo(contexto, this.posicion.x + posicionOjoDerecho.x,
+                        this.posicion.y + posicionOjoDerecho.y, 12);
+                    
+                    PintarCirculo(contexto, this.posicion.x + posicionOjoIzquierdo.x,
+                        this.posicion.y + posicionOjoIzquierdo.y, 12);
+
                 }  
+            }
+
+            class Semilla
+            {
+                posicion = new Vector();
+
+                constructor()
+                {
+                    this.posicion.x = Math.random() * 640;
+                    this.posicion.y = 140 + Math.random() * (480 - 140);
+                }
+
+                Dibuja(contexto)
+                {
+                    contexto.fillStyle = "gray";
+
+                    PintarCirculo(contexto, this.posicion.x, this.posicion.y, 10);
+                }
             }
 
             class MotorJuego
@@ -79,6 +140,7 @@
 
                 fondo = new Fondo();
                 bola = new Bola();
+                semillas = [];
 
                 Comienzo()
                 {
@@ -172,6 +234,31 @@
 
                     this.ActualizaTeclado();
 
+                    // Colisiones (¿se ha comido una semilla?)
+
+                    for(let i = this.semillas.length - 1; i >= 0; --i)
+                    {
+                        let semilla = this.semillas[i];
+
+                        let delta = new Vector(
+                            semilla.posicion.x - this.bola.posicion.x,
+                            semilla.posicion.y - this.bola.posicion.y);
+
+                        let hipotenusa = delta.Hipotenusa();
+
+                        if(hipotenusa < (50 + 10))
+                            this.semillas.splice(i, 1);
+                    }
+
+                    // Creamos Semillas
+
+                    while(this.semillas.length < 10)
+                    {
+                        let semilla = new Semilla();
+
+                        this.semillas.push(semilla);
+                    }
+
                     // Movemos
 
                     this.bola.Tic();
@@ -182,10 +269,9 @@
 
                     this.bola.Dibuja(contexto);
 
-                    contexto.fillStyle = "rgba(100, 200, 200, 0.5)";
+                    for(let semilla of this.semillas)
+                        semilla.Dibuja(contexto);
 
-                    PintarCirculo(contexto, 200, 240, 100);
-                    PintarCirculo(contexto, 400, 240, 100);
 
                     window.requestAnimationFrame(this.Actualiza);
                 }
